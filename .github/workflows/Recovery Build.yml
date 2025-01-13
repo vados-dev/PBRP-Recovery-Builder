@@ -3,46 +3,46 @@ name: Recovery Build
 on:
   workflow_dispatch:
     inputs:
-      MANIFEST_URL:
+      MANIFEST_URL: 
         description: 'MANIFEST_URL (if want to use SSH keys, use git@github.com:XXXXX)'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'https://github.com/vados-dev/manifest_pb.git'
       MANIFEST_BRANCH:
         description: 'MANIFEST_BRANCH'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'PBRP'
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'https://github.com/vados-dev/twrp_device_sprd_D41.git'
       DEVICE_TREE_BRANCH:
         description: 'DEVICE_TREE_BRANCH'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'twrp-8.1'
       DEVICE_PATH:
         description: 'DEVICE_PATH'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'device/sprd/D41'
       DEVICE_NAME:
         description: 'DEVICE_NAME'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'D41'
       MAKEFILE_NAME:
         description: 'MAKEFILE_NAME'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'omni_D41'
       BUILD_TARGET:
         description: 'BUILD_TARGET'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'recoveryimage'
       USER_NAME:
         description: 'Git Username'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'vados-dev'
       USER_EMAIL:
         description: 'Git Email'
         required: true
-        default: 'PLACEHOLDER'
+        default: 'vados@vados.ru'
 
 jobs:
   build:
@@ -141,5 +141,5 @@ jobs:
           Device: ${{ github.event.inputs.DEVICE_NAME }}
           Target: ${{ github.event.inputs.BUILD_TARGET }}.img
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.Test }}
         
