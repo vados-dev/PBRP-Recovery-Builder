@@ -43,6 +43,11 @@ on:
         description: 'Git Email'
         required: true
         default: 'vados@vados.ru'
+      CLEANUP:
+        description: 'Enable Cleanup action (disable to speed up building)'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -95,8 +100,8 @@ jobs:
       if: ${{ inputs.CLEANUP }}
 # That's it! Now use your normal steps
     
-    - name: Cleanup
-      uses: rokibhasansagar/slimhub_actions@main
+#    - name: Cleanup
+#      uses: rokibhasansagar/slimhub_actions@main
 
     - name: Install OpenJDK
       uses: actions/setup-java@v3
