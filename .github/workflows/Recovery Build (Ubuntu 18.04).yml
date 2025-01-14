@@ -15,15 +15,15 @@ on:
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
-        default: 'https://github.com/vados-dev/twrp_device_D41'
+        default: 'https://github.com/vados-dev/twrp_device_sprd_HSL67E_G.git'
       DEVICE_TREE_BRANCH:
         description: 'DEVICE_TREE_BRANCH'
         required: true
-        default: 'twrp-8.1'
+        default: 'twrp-9.0'
       DEVICE_PATH:
         description: 'DEVICE_PATH'
         required: true
-        default: 'device/sprd/D41'
+        default: 'device/sprd/HSL67E_G'
       COMMON_TREE_URL:
         description: 'COMMON_TREE_URL (if no common tree, leave blank)'
         required: false
@@ -33,11 +33,11 @@ on:
       DEVICE_NAME:
         description: 'DEVICE_NAME'
         required: true
-        default: 'D41'
+        default: 'omni-HSL67E_G'
       MAKEFILE_NAME:
         description: 'MAKEFILE_NAME'
         required: true
-        default: 'omni_D41'
+        default: 'omni_HSL67E_G'
       CLEANUP:
         description: 'Enable Cleanup action (disable to speed up building)'
         required: true
@@ -121,9 +121,13 @@ jobs:
         mkdir workspace
         cd workspace
         echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
-        git config --global user.name "azwhikaru"
-        git config --global user.email "azwhikaru+37921907@github.com"
+        git config --global user.name "vados-dev"
+        git config --global user.email "vados@vados.ru"
         repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
+        sed -i 's/android_system_core/android_system_core_old/' .repo/manifests/omni-aosp.xml ;
+        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/omni-aosp.xml ;
+        sed -i 's/android_frameworks_base/android_frameworks_base_old/g' .repo/manifests/remove-minimal.xml ;
+        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/twrp-extras.xml ;
       id: pwd
           
     - name: Repo Sync
@@ -151,10 +155,10 @@ jobs:
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
       continue-on-error: true
 
-#    - name: Set Swap Space
-#      uses: pierotofy/set-swap-space@master
-#      with:
-#        swap-size-gb: 12
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 12
 
     - name: Switch to Python2
       run: |
