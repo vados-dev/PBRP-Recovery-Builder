@@ -34,7 +34,7 @@ on:
       BUILD_TARGET:
         description: 'BUILD_TARGET'
         required: true
-        default: 'recoveryimage'
+        default: 'pbrp'
       USER_NAME:
         description: 'Git Username'
         required: true
@@ -43,11 +43,6 @@ on:
         description: 'Git Email'
         required: true
         default: 'vados@vados.ru'
-      CLEANUP:
-        description: 'Enable Cleanup action (disable to speed up building)'
-        required: true
-        type: boolean
-        default: true
 
 jobs:
   build:
@@ -97,9 +92,8 @@ jobs:
       run: | 
         sudo cp scripts/cleanup.sh /host_root/root
         sudo chroot /host_root /root/cleanup.sh
-      if: ${{ inputs.CLEANUP }}
 # That's it! Now use your normal steps
-    
+   
 #    - name: Cleanup
 #      uses: rokibhasansagar/slimhub_actions@main
 
