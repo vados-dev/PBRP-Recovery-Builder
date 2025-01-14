@@ -93,6 +93,7 @@ jobs:
       run: | 
         sudo cp scripts/cleanup.sh /host_root/root
         sudo chroot /host_root /root/cleanup.sh
+      if: ${{ inputs.CLEANUP }}
 # That's it! Now use your normal steps
    
 #    - name: Cleanup
