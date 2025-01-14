@@ -93,7 +93,8 @@ jobs:
         sudo cp scripts/cleanup.sh /host_root/root
         sudo chroot /host_root /root/cleanup.sh
       if: ${{ inputs.CLEANUP }}
-      # That's it! Now use your normal steps
+    # That's it! Now use your normal steps
+      uses: rokibhasansagar/slimhub_actions@main
 
     - name: Install OpenJDK
       uses: actions/setup-java@v3
@@ -135,12 +136,10 @@ jobs:
         git config --global user.name "${{ github.event.inputs.USER_NAME }}"
         git config --global user.email "${{ github.event.inputs.USER_EMAIL }}"
         repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
-        # Depesh fix
         sed -i 's/android_system_core/android_system_core_old/' .repo/manifests/omni-aosp.xml ;
         sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/omni-aosp.xml ;
         sed -i 's/android_frameworks_base/android_frameworks_base_old/g' .repo/manifests/remove-minimal.xml ;
         sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/twrp-extras.xml ;
-        # end Depesh fix
       id: pwd
           
     - name: Repo Sync
