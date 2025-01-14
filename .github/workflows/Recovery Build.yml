@@ -10,7 +10,7 @@ on:
       MANIFEST_BRANCH:
         description: 'MANIFEST_BRANCH'
         required: true
-        default: 'PBRP'
+        default: 'android-9.0'
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
@@ -87,13 +87,13 @@ jobs:
     - name: Check Out
       uses: actions/checkout@v4
 
-    # Cleanup The Actions Workspace Using Custom Composite Run Actions
+# Cleanup The Actions Workspace Using Custom Composite Run Actions
     - name: Cleanup
       run: | 
         sudo cp scripts/cleanup.sh /host_root/root
         sudo chroot /host_root /root/cleanup.sh
       if: ${{ inputs.CLEANUP }}
-    # That's it! Now use your normal steps
+# That's it! Now use your normal steps
     
     - name: Cleanup
       uses: rokibhasansagar/slimhub_actions@main
@@ -138,10 +138,10 @@ jobs:
         git config --global user.name "${{ github.event.inputs.USER_NAME }}"
         git config --global user.email "${{ github.event.inputs.USER_EMAIL }}"
         repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
-        sed -i 's/android_system_core/android_system_core_old/' .repo/manifests/omni-aosp.xml ;
-        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/omni-aosp.xml ;
-        sed -i 's/android_frameworks_base/android_frameworks_base_old/g' .repo/manifests/remove-minimal.xml ;
-        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/twrp-extras.xml ;
+#        sed -i 's/android_system_core/android_system_core_old/' .repo/manifests/omni-aosp.xml ;
+#        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/omni-aosp.xml ;
+#        sed -i 's/android_frameworks_base/android_frameworks_base_old/g' .repo/manifests/remove-minimal.xml ;
+#        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/twrp-extras.xml ;
       id: pwd
           
     - name: Repo Sync
@@ -162,10 +162,10 @@ jobs:
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
       continue-on-error: true
 
-    #- name: Set Swap Space
-    #  uses: pierotofy/set-swap-space@master
-    #  with:
-    #    swap-size-gb: 12
+#    - name: Set Swap Space
+#      uses: pierotofy/set-swap-space@master
+#      with:
+#        swap-size-gb: 12
 
     - name: Switch to Python2
       run: |
@@ -173,14 +173,14 @@ jobs:
         sudo ln -sf /usr/bin/python2.7 /usr/bin/python
       continue-on-error: true
  
-    #    - name: Downgrade GLIBC to 2.27
-    #      run: |
-    #        sudo aptitude update
-    #        echo -e "n\n\n\n" | sudo aptitude install libc6=2.27-3ubuntu1.6
+#    - name: Downgrade GLIBC to 2.27
+#      run: |
+#        sudo aptitude update
+#        echo -e "n\n\n\n" | sudo aptitude install libc6=2.27-3ubuntu1.6
 
-    #    - name: Setup tmate session
-    #      uses: mxschmitt/action-tmate@v3
-    #      if: ${{ failure() }}
+#    - name: Setup tmate session
+#      uses: mxschmitt/action-tmate@v3
+#      if: ${{ failure() }}
   
     - name: Building recovery
       shell: bash
