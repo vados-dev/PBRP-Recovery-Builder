@@ -48,8 +48,13 @@ jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    container:
+      image: ghcr.io/catthehacker/ubuntu:runner-18.04
+      volumes:
+        - /:/host_root
+    env:
+      LC_ALL: "C.UTF-8"
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     steps:
     - name: Display Run Parameters
       run: |
@@ -64,22 +69,48 @@ jobs:
         echo "Build Target: ${{ github.event.inputs.BUILD_TARGET }}.img"
         echo "::endgroup::"
 
+    - name: Prepare the environment
+      run: |
+        sudo apt update
+        sudo apt install libc6
+        sudo apt -y upgrade
+        sudo apt install -yq aptitude bc bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python bash tmux
+
+    - name: Upgrade GLIBC to 2.28
+      run: |
+        sudo sed -i '$a deb http://security.debian.org/debian-security buster/updates main' /etc/apt/sources.list
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 112695A0E562B32A 54404762BBB6E853
+        sudo apt update
+        sudo apt install libc6 -y
+        sudo sed -i '$d' /etc/apt/sources.list
+
     - name: Check Out
       uses: actions/checkout@v4
 
+    # Cleanup The Actions Workspace Using Custom Composite Run Actions
     - name: Cleanup
-      uses: rokibhasansagar/slimhub_actions@main
+      run: | 
+        sudo cp scripts/cleanup.sh /host_root/root
+        sudo chroot /host_root /root/cleanup.sh
+      if: ${{ inputs.CLEANUP }}
+      # That's it! Now use your normal steps
 
-    - name: Prepare the environment
-      run: |
-        sudo apt install git aria2 -y
-        mkdir ofx_scripts
-        cd ofx_scripts
-        git clone https://gitlab.com/OrangeFox/misc/scripts 
-        cd scripts
-        sudo bash setup/android_build_env.sh
-        sed -i 's/cd -/cd ../g' setup/install_android_sdk.sh
-        sudo bash setup/install_android_sdk.sh
+    - name: Install OpenJDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '8'
+
+  #  - name: Prepare the environment
+  #    run: |
+  #      sudo apt install git aria2 -y
+  #      mkdir ofx_scripts
+  #      cd ofx_scripts
+  #      git clone https://gitlab.com/OrangeFox/misc/scripts 
+  #      cd scripts
+  #      sudo bash setup/android_build_env.sh
+  #      sed -i 's/cd -/cd ../g' setup/install_android_sdk.sh
+  #      sudo bash setup/install_android_sdk.sh
 
     - name: Setup SSH Keys
       if: ${{ startsWith(github.event.inputs.MANIFEST_URL, 'git@github.com') }}
@@ -90,6 +121,7 @@ jobs:
 
     - name: Install repo
       run: |
+        sudo ln -sf /usr/bin/python3 /usr/bin/python
         mkdir ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
@@ -103,11 +135,18 @@ jobs:
         git config --global user.name "${{ github.event.inputs.USER_NAME }}"
         git config --global user.email "${{ github.event.inputs.USER_EMAIL }}"
         repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
+        # Depesh fix
+        sed -i 's/android_system_core/android_system_core_old/' .repo/manifests/omni-aosp.xml ;
+        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/omni-aosp.xml ;
+        sed -i 's/android_frameworks_base/android_frameworks_base_old/g' .repo/manifests/remove-minimal.xml ;
+        sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/twrp-extras.xml ;
+        # end Depesh fix
       id: pwd
           
     - name: Repo Sync
       run: |
-        repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j$(nproc --all)
+        repo sync -j$(nproc --all) --force-sync
+        #repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j$(nproc --all)
       working-directory: workspace
       
     - name: Clone device tree
@@ -115,12 +154,35 @@ jobs:
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
-    - name: Set Swap Space
-      uses: pierotofy/set-swap-space@master
-      with:
-        swap-size-gb: 12
+    - name: Sync Device Dependencies
+      run: |
+        bash ${GITHUB_WORKSPACE}/scripts/convert.sh ${{ github.event.inputs.DEVICE_PATH }}/${{ steps.buildtree.outputs.value }}.dependencies
+        repo sync -j$(nproc --all)
+      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+      continue-on-error: true
 
+    #- name: Set Swap Space
+    #  uses: pierotofy/set-swap-space@master
+    #  with:
+    #    swap-size-gb: 12
+
+    - name: Switch to Python2
+      run: |
+        sudo rm -f /usr/bin/python /usr/bin/python3.6 /usr/bin/python3.6m /usr/local/bin/python
+        sudo ln -sf /usr/bin/python2.7 /usr/bin/python
+      continue-on-error: true
+ 
+    #    - name: Downgrade GLIBC to 2.27
+    #      run: |
+    #        sudo aptitude update
+    #        echo -e "n\n\n\n" | sudo aptitude install libc6=2.27-3ubuntu1.6
+
+    #    - name: Setup tmate session
+    #      uses: mxschmitt/action-tmate@v3
+    #      if: ${{ failure() }}
+  
     - name: Building recovery
+      shell: bash
       run: |
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
@@ -141,5 +203,5 @@ jobs:
           Device: ${{ github.event.inputs.DEVICE_NAME }}
           Target: ${{ github.event.inputs.BUILD_TARGET }}.img
       env:
-        GITHUB_TOKEN: ${{ secrets.TEST }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
