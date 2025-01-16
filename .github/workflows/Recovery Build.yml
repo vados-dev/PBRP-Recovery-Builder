@@ -116,16 +116,16 @@ jobs:
         distribution: 'zulu'
         java-version: '8'
 
- #   - name: Prepare the environment
- #     run: |
- #       sudo apt install git aria2 -y
- #       mkdir ofx_scripts
- #       cd ofx_scripts
- #       git clone https://gitlab.com/OrangeFox/misc/scripts 
- #      cd scripts
- #      sudo bash setup/android_build_env.sh
- #       sed -i 's/cd -/cd ../g' setup/install_android_sdk.sh
- #       sudo bash setup/install_android_sdk.sh
+    - name: Prepare the environment
+      run: |
+        sudo apt install git aria2 -y
+        mkdir ofx_scripts
+        cd ofx_scripts
+        git clone https://gitlab.com/OrangeFox/misc/scripts 
+       cd scripts
+       sudo bash setup/android_build_env.sh
+        sed -i 's/cd -/cd ../g' setup/install_android_sdk.sh
+        sudo bash setup/install_android_sdk.sh
 
     - name: Setup SSH Keys
       if: ${{ startsWith(github.event.inputs.MANIFEST_URL, 'git@github.com') }}
@@ -194,9 +194,9 @@ jobs:
 #        sudo aptitude update
 #        echo -e "n\n\n\n" | sudo aptitude install libc6=2.27-3ubuntu1.6
 
-#    - name: Setup tmate session
-#      uses: mxschmitt/action-tmate@v3
-#      if: ${{ failure() }}
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: ${{ failure() }}
   
     - name: Building recovery
       run: |
