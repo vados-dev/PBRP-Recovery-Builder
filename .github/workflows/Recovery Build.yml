@@ -58,6 +58,8 @@ jobs:
     steps:
     - name: Display Run Parameters
       run: |
+        cd /tmp
+        rm -rf *
         echo "::group::User Environment Variables"
         echo "Manifest URL: ${{ github.event.inputs.MANIFEST_URL }}"
         echo "Manifest Branch: ${{ github.event.inputs.MANIFEST_BRANCH }}"
@@ -94,8 +96,6 @@ jobs:
 # Cleanup The Actions Workspace Using Custom Composite Run Actions
     - name: Cleanup
       run: | 
-        cd /tmp
-        rm -rf *
         sudo cp scripts/cleanup.sh /host_root/root
         sudo chroot /host_root /root/cleanup.sh
       if: ${{ inputs.CLEANUP }}
