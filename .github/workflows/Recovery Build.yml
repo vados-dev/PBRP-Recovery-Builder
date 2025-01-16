@@ -15,23 +15,23 @@ on:
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
-        default: 'https://github.com/vados-dev/twrp_device_sprd_D41.git'
+        default: 'https://github.com/vados-dev/sl8541e_cus_go.git'
       DEVICE_TREE_BRANCH:
         description: 'DEVICE_TREE_BRANCH'
         required: true
-        default: 'twrp-8.1'
+        default: 'android-9.0'
       DEVICE_PATH:
         description: 'DEVICE_PATH'
         required: true
-        default: 'device/sprd/D41'
+        default: 'device/sprd/sl8541e_cus_go'
       DEVICE_NAME:
         description: 'DEVICE_NAME'
         required: true
-        default: 'D41'
+        default: 'sl8541e_cus_go'
       MAKEFILE_NAME:
         description: 'MAKEFILE_NAME'
         required: true
-        default: 'omni_D41'
+        default: 'omni_sl8541e_cus_go'
       BUILD_TARGET:
         description: 'BUILD_TARGET'
         required: true
@@ -205,5 +205,5 @@ jobs:
           Device: ${{ github.event.inputs.DEVICE_NAME }}
           Target: ${{ github.event.inputs.BUILD_TARGET }}.img
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.amster }}
         
