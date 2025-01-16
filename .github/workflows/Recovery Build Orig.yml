@@ -124,6 +124,12 @@ jobs:
       with:
         swap-size-gb: 12
 
+    - name: Switch to Python2
+      run: |
+        sudo rm -f /usr/bin/python /usr/bin/python3.6 /usr/bin/python3.6m /usr/local/bin/python
+        sudo ln -sf /usr/bin/python2.7 /usr/bin/python
+      continue-on-error: true
+
     - name: Building recovery
       run: |
         source build/envsetup.sh
