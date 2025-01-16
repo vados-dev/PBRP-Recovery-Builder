@@ -199,7 +199,6 @@ jobs:
 #      if: ${{ failure() }}
   
     - name: Building recovery
-      shell: bash
       run: |
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
