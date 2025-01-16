@@ -94,6 +94,8 @@ jobs:
 # Cleanup The Actions Workspace Using Custom Composite Run Actions
     - name: Cleanup
       run: | 
+        cd /tmp
+        rm -rf *
         sudo cp scripts/cleanup.sh /host_root/root
         sudo chroot /host_root /root/cleanup.sh
       if: ${{ inputs.CLEANUP }}
