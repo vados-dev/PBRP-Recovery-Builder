@@ -76,7 +76,10 @@ jobs:
         sudo apt install libc6
         sudo apt -y upgrade
         sudo apt install -yq aptitude bc bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python bash tmux
-
+    - name: df
+      run: |
+        df -h
+        
     - name: Upgrade GLIBC to 2.28
       run: |
         sudo sed -i '$a deb http://security.debian.org/debian-security buster/updates main' /etc/apt/sources.list
