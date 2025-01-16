@@ -1,4 +1,4 @@
-name: Recovery Build
+name: Build PBRP by ${{ github.actor }}
 permissions:
   contents: write
 on:
