@@ -42,18 +42,21 @@ on:
         type: boolean
         default: true
 
-jobs:
-  build:
-    if: github.event.repository.owner.id == github.event.sender.id
+jobs:  build:
+    name: Build PBRP by ${{ github.actor }}
     runs-on: ubuntu-20.04
-    container:
-      image: ghcr.io/catthehacker/ubuntu:runner-18.04
-      volumes:
-        - /:/host_root
+    if: github.event.repository.owner.id == github.event.sender.id
     env:
+      GITHUB_TOKEN: ${{ secrets.axe }}
       LC_ALL: "C.UTF-8"
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
+    permissions:
+      contents: write
     steps:
+    - name: Check Out
+      uses: actions/checkout@v4
+
     - name: Display Run Parameters
       run: |
         echo "::group::User Environment Variables"
@@ -67,6 +70,14 @@ jobs:
         echo "Build Target: ${{ github.event.inputs.BUILD_TARGET }}.img"
         echo "::endgroup::"
 
+    - name: Cleanup
+      uses: rokibhasansagar/slimhub_actions@main
+      
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 12
+        
     - name: Prepare the environment
       run: |
         sudo apt update
@@ -86,19 +97,13 @@ jobs:
         sudo apt install libc6 -y
         sudo sed -i '$d' /etc/apt/sources.list
 
-    - name: Check Out
-      uses: actions/checkout@v4
-
 # Cleanup The Actions Workspace Using Custom Composite Run Actions
-    - name: Cleanup
-      run: | 
-        sudo cp scripts/cleanup.sh /host_root/root
-        sudo chroot /host_root /root/cleanup.sh
-      if: ${{ inputs.CLEANUP }}
+#    - name: Cleanup
+#      run: | 
+#        sudo cp scripts/cleanup.sh /host_root/root
+#        sudo chroot /host_root /root/cleanup.sh
+#      if: ${{ inputs.CLEANUP }}
 # That's it! Now use your normal steps
-
-    - name: Cleanup Standart
-      uses: rokibhasansagar/slimhub_actions@main
 
     - name: df
       run: |
@@ -213,6 +218,3 @@ jobs:
           Manifest: ${{ github.event.inputs.MANIFEST_BRANCH }}
           Device: ${{ github.event.inputs.DEVICE_NAME }}
           Target: ${{ github.event.inputs.BUILD_TARGET }}.img
-      env:
-        GITHUB_TOKEN: ${{ secrets.amster }}
-        
