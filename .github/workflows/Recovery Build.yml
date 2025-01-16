@@ -100,6 +100,10 @@ jobs:
     - name: Cleanup Standart
       uses: rokibhasansagar/slimhub_actions@main
 
+    - name: df
+      run: |
+        df -h
+
     - name: Install OpenJDK
       uses: actions/setup-java@v3
       with:
