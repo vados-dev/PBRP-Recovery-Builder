@@ -36,14 +36,11 @@ on:
         description: 'BUILD_TARGET'
         required: true
         default: 'recovery'
-      USER_NAME:
-        description: 'Git Username'
+      CLEANUP:
+        description: 'Enable Cleanup action (disable to speed up building)'
         required: true
-        default: 'vados-dev'
-      USER_EMAIL:
-        description: 'Git Email'
-        required: true
-        default: 'vados@vados.ru'
+        type: boolean
+        default: true
 
 jobs:
   build:
@@ -143,8 +140,8 @@ jobs:
         mkdir workspace
         cd workspace
         echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
-        git config --global user.name "${{ github.event.inputs.USER_NAME }}"
-        git config --global user.email "${{ github.event.inputs.USER_EMAIL }}"
+        git config --global user.name "vados-dev"
+        git config --global user.email "vados@vados.ru"
         repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
         sed -i 's/android_system_core/android_system_core_old/' .repo/manifests/omni-aosp.xml ;
         sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/omni-aosp.xml ;
