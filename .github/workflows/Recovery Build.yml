@@ -79,7 +79,7 @@ jobs:
       with:
         swap-size-gb: 12
         
-    - name: Prepare the environment
+    - name: Prepare the environment 1
       run: |
         sudo apt update
         sudo apt install libc6
