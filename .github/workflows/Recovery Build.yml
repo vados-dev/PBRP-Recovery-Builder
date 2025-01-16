@@ -46,8 +46,6 @@ jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-20.04
-    permissions:
-      contents: write
     container:
       image: ghcr.io/catthehacker/ubuntu:runner-18.04
       volumes:
@@ -58,8 +56,6 @@ jobs:
     steps:
     - name: Display Run Parameters
       run: |
-        cd /tmp
-        rm -rf *
         echo "::group::User Environment Variables"
         echo "Manifest URL: ${{ github.event.inputs.MANIFEST_URL }}"
         echo "Manifest Branch: ${{ github.event.inputs.MANIFEST_BRANCH }}"
