@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.event.repository.owner.id == github.event.sender.id
     env:
-      GITHUB_TOKEN: ${{ secrets.axe }}
+      GITHUB_TOKEN: ${{ secrets.amster }}
     permissions:
       contents: write
     steps:
@@ -117,8 +117,8 @@ jobs:
       run: |
         mkdir android-recovery
         cd android-recovery
-        git config --global user.name "depesh1977"
-        git config --global user.email "axenov.gosha@yandex.ru"
+        git config --global user.name "vados-dev"
+        git config --global user.email "vados@vados.ru"
         repo init --depth=1 -u https://github.com/PitchBlackRecoveryProject/manifest_pb.git -b ${{ inputs.MANIFEST_BRANCH }}
         sed -i 's/android_system_core/android_system_core_old/' .repo/manifests/omni-aosp.xml ;
         sed -i 's/android_frameworks_base/android_frameworks_base_old/' .repo/manifests/omni-aosp.xml ;
